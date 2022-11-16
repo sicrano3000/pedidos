@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5430/pedidos
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernat.dialect.PostgreSQLDialect
+      jdbc:
+        lob:
+          non_contextual_creation: true
+    properties:
+      hibernate:
+        show_sql: true
+
+logging:
+  level:
+    com.infnet.projeto: TRACE
+    root: INFO
