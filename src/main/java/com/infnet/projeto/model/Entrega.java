@@ -1,6 +1,7 @@
 package com.infnet.projeto.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "TB_ENTREGA")
@@ -24,7 +27,11 @@ public class Entrega implements Serializable {
 	
 	@Column(nullable = false)
 	private String endereco;
+	
 	private Integer previsaoEntrega;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+	private LocalDateTime dataCompra;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "idCliente")
@@ -35,6 +42,9 @@ public class Entrega implements Serializable {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public LocalDateTime getDataCompra() {
+		return LocalDateTime.now();
 	}
 	public String getEndereco() {
 		return endereco;
@@ -51,11 +61,11 @@ public class Entrega implements Serializable {
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
-
+	
 	@Override
 	public String toString() {
-		return "Entrega [id=" + id + ", endereco=" + endereco + ", previsaoEntrega=" + previsaoEntrega + ", cliente="
-				+ cliente + "]";
+		return "Entrega [id=" + id + ", endereco=" + endereco + ", previsaoEntrega=" + previsaoEntrega + ", dataCompra="
+				+ dataCompra + ", cliente=" + cliente + "]";
 	}
 
 }
