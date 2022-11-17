@@ -10,14 +10,19 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.modelmapper.ModelMapper;
+
+import com.infnet.projeto.dto.MassaDTO;
 import com.infnet.projeto.enums.Borda;
 import com.infnet.projeto.enums.Sabor;
+import com.infnet.projeto.enums.Tipo;
 
 @Entity
-@Table(name = "TB_PIZZA")
-public class Pizza implements Serializable {
+@Table(name = "TB_MASSA")
+public class Massa implements Serializable {
 	
 	private static final long serialVersionUID = -278551675699138530L;
 	
@@ -38,6 +43,17 @@ public class Pizza implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private Borda borda;
 	
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private Tipo tipo;
+	
+	@ManyToOne
+	private Pedido pedido;
+	
+	public static Massa create(MassaDTO massaDTO) {
+		return new ModelMapper().map(massaDTO, Massa.class);
+	} 
+	
 	public Long getId() {
 		return id;
 	}
@@ -53,16 +69,16 @@ public class Pizza implements Serializable {
 	public Double getValor() {
 		switch (this.sabor) {
 		case MUSSARELA:
-			valor = 50.0;
+			valor = this.tipo == Tipo.PIZZA ? 50.0 : 25.0;
 			break;
 		case PRESUNTO:
-			valor = 50.0;
+			valor = this.tipo == Tipo.PIZZA ? 50.0 : 25.0;
 			break;
 		case QUEIJO4:
-			valor = 60.0;
+			valor = this.tipo == Tipo.PIZZA ? 60.0 : 30.0;
 			break;
 		case BACON:
-			valor = 60.0;
+			valor = this.tipo == Tipo.PIZZA ? 60.0 : 30.0;
 			break;
 
 		default:
@@ -84,10 +100,22 @@ public class Pizza implements Serializable {
 	public void setBorda(Borda borda) {
 		this.borda = borda;
 	}
-
+	public Tipo getTipo() {
+		return tipo;
+	}
+	public void setTipo(Tipo tipo) {
+		this.tipo = tipo;
+	}	
+	public Pedido getEntrega() {
+		return pedido;
+	}
+	public void setEntrega(Pedido pedido) {
+		this.pedido = pedido;
+	}
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, descricao, sabor, valor, borda);
+		return Objects.hash(id, descricao, sabor, valor, borda, tipo);
 	}
 	
 	@Override
@@ -98,13 +126,14 @@ public class Pizza implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Pizza other = (Pizza) obj;
-		return Objects.equals(id, other.id) && Objects.equals(descricao, other.descricao) && Objects.equals(sabor, other.sabor) && Objects.equals(valor, other.valor) && Objects.equals(borda, other.borda);
+		Massa other = (Massa) obj;
+		return Objects.equals(id, other.id) && Objects.equals(descricao, other.descricao) && Objects.equals(sabor, other.sabor) 
+				&& Objects.equals(valor, other.valor) && Objects.equals(borda, other.borda) && Objects.equals(tipo, other.tipo);
 	}
 
 	@Override
 	public String toString() {
-		return "Pizza [id=" +id + "descricao=" + descricao + ", valor=" + valor + ", sabor=" + sabor + ", borda=" + borda + "]";
+		return "Massa [id=" +id + "descricao=" + descricao + ", valor=" + valor + ", sabor=" + sabor + ", borda=" + borda + ", tipo=" + tipo + "]";
 	}
 
 }

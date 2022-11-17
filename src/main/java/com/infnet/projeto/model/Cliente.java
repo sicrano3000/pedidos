@@ -9,6 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.modelmapper.ModelMapper;
+
+import com.infnet.projeto.dto.ClienteDTO;
+
 @Entity
 @Table(name = "TB_CLIENTE")
 public class Cliente implements Serializable {
@@ -27,6 +31,10 @@ public class Cliente implements Serializable {
 	
 	@Column(nullable = false)
 	private String email;
+	
+	public static Cliente create(ClienteDTO clienteDTO) {
+		return new ModelMapper().map(clienteDTO, Cliente.class);
+	}
 	
 	public Long getId() {
 		return id;
