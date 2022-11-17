@@ -1,19 +1,19 @@
 package com.infnet.projeto.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.infnet.projeto.dto.ClienteDTO;
-import com.infnet.projeto.model.Cliente;
 
 public interface IClienteService {
 	
-	Cliente salvar(ClienteDTO clienteDTO) throws Exception;
+	ClienteDTO salvar(ClienteDTO clienteDTO) throws Exception;
 	
-	List<Cliente> listarTodos();
+	Page<ClienteDTO> listarTodos(Pageable pageable);
 	
-	Cliente listarPorId(Long id) throws Exception;
+	ClienteDTO listarPorId(Long id) throws Exception;
 
-	Cliente atualizar(Long id, ClienteDTO clienteDTO);
+	ClienteDTO atualizar(Long id, ClienteDTO clienteDTO);
 
 	void deletar(Long id) throws Exception;
 	

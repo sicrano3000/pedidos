@@ -1,8 +1,7 @@
 package com.infnet.projeto.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.infnet.projeto.dto.ClienteDTO;
@@ -21,44 +20,53 @@ public class ClienteService implements IClienteService {
 	}
 
 	@Override
-	public Cliente salvar(ClienteDTO clienteDTO) throws Exception {
-		var cliente = new Cliente();
-		
+	public ClienteDTO salvar(ClienteDTO clienteDTO) throws Exception {
 		if (clienteRepository.findByCpf(clienteDTO.getCpf()).isPresent()) {
 			throw new Exception("Já existe um Cliente com este CPF!");
 		}
 		
-		BeanUtils.copyProperties(clienteDTO, cliente);
+		return ClienteDTO.create(clienteRepository.save(Cliente.create(clienteDTO)));
+	}
+
+	@Override
+	public Page<ClienteDTO> listarTodos(Pageable pageable) {
+		var page = clienteRepository.findAll(pageable);
 		
-		return clienteRepository.save(cliente);
+		return page.map(this::convertToClienteDTO);
+	}
+	
+	private ClienteDTO convertToClienteDTO(Cliente cliente) {
+		return ClienteDTO.create(cliente);
 	}
 
 	@Override
-	public List<Cliente> listarTodos() {
-		return clienteRepository.findAll();
+	public ClienteDTO listarPorId(Long id) throws Exception {
+		var cliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente com id = " + id + " não encontrado!"));
+		
+		return ClienteDTO.create(cliente);
 	}
 
 	@Override
-	public Cliente listarPorId(Long id) throws Exception {
-		return clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente com id = " + id + " não encontrado!"));
-	}
-
-	@Override
-	public Cliente atualizar(Long id, ClienteDTO clienteDTO) {
+	public ClienteDTO atualizar(Long id, ClienteDTO clienteDTO) {
 		var cliente = clienteRepository.findById(id).get();
 		
 		cliente.setEmail(clienteDTO.getEmail());
 		cliente.setCpf(clienteDTO.getCpf());
 		cliente.setNome(clienteDTO.getNome());
 		
-		return clienteRepository.save(cliente);
+		return ClienteDTO.create(clienteRepository.save(cliente));
 	}
 
 	@Override
 	public void deletar(Long id) throws Exception {		
 		var cliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente com id = " + id + " não encontrado!"));
 		
-		clienteRepository.delete(cliente);
+		try {
+			clienteRepository.delete(cliente);
+		} catch (Exception e) {
+			throw new Exception("Cancele os pedidos do Cliente antes de excluir!");
+		}
+		
 	}
 
 }
